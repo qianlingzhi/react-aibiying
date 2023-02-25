@@ -1,24 +1,36 @@
-import { getHomeGoodPriceData } from "@/services/modules/home";
+import { getHomeDiscountData, getHomeGoodPriceData } from "@/services/modules/home";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-export const fetchHomeDataAction = createAsyncThunk('fetchdata',async(payload) => {
-  const res = await getHomeGoodPriceData()
-  return res
-} )
-
+export const fetchHomeDataAction = createAsyncThunk('fetchdata',(payload, {dispatch}) => {
+  getHomeGoodPriceData().then( res => {
+    dispatch(homeGoodPriceDataAction(res))
+  })
+  getHomeDiscountData().then( res => {
+    dispatch(homeDiscountDataAction(res))
+  })
+})
 
 
 const homeSlice = createSlice({
   name:'home',
   initialState: {
-    goodPriceInfo: {}
+    goodPriceInfo: {},
+    discountInfo:{}
   },
-  reducers: {},
-  extraReducers: {
-    [fetchHomeDataAction.fulfilled](state, { payload }) {
+  reducers: {
+    homeGoodPriceDataAction(state, { payload }) {
       state.goodPriceInfo = payload
+    },
+    homeDiscountDataAction(state, { payload} ) {
+      state.discountInfo = payload
     }
-  }
+  },
 })
+
+export const {
+  homeGoodPriceDataAction,
+  homeDiscountDataAction
+} = homeSlice.actions
+
 
 export default homeSlice.reducer
